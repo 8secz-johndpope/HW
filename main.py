@@ -1,19 +1,12 @@
-import numpy as np
+from people.Human import Human
+from people.Woman import Woman
 
-
-def decorator(func):
-
-    def wrapper():
-        result = func()
-        return  np.linalg.matrix_rank(result)
-    return wrapper
-
-@decorator
-def rank():
-    matrix = [[1,0,0],[0,1,0],[0,0,0]]
-    return matrix
-
-result = rank()
-print (result)
-
-
+man = Human('Andrey')
+man.say(1)
+man = Human('Vasya')
+man.say(1)
+woman = Woman('Masha')
+print(man.work())
+woman.shopping(man)
+some = Woman.sex(man, woman)
+some[0].say()
