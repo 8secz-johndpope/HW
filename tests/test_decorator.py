@@ -1,27 +1,31 @@
 import pytest
-import decorator as decorator
+from decorator import pow, square
 
-@pytest.mark.parametrize('a, answer',[
-    (2, 4),
-    (3, 9),
-    ('va$9a', [])
+
+@pytest.mark.parametrize('a, b, c, answer', [
+    (1, 2, 3, -1),
+    (2, 1, 5, 16),
+    ('Masha', 2, 'Masha', [])
+])
+def test_decPow(a, b, c, answer):
+    @pow(power=a)
+    def f3(x, y):
+        if isinstance(x, (float, int)) and (y, (float, int)):
+            return x - y
+        return []
+    assert f3(b, c) == answer
+
+
+
+@pytest.mark.parametrize('a, b, answer', [
+    (1, 2, 4),
+    ('Masha', 'Masha', [])
 ])
 
-def test_f2(a,answer):
-    return decorator.f2(a) == answer
-
-def test_f2Negative():
-    return decorator.f2 == []
-
-@pytest.mark.parametrize('a, b, answer',[
-    (6, 5, 1),
-    (8, 7, 1),
-    (9, 9, 0),
-    ('22','petya',[])
-])
-
-def test_f3(a, b, answer):
-    return decorator.f3(a, b) == answer
-
-def test_f3Negative():
-    return decorator.f3 == []
+def test_decSquare(a, b, answer):
+    @square
+    def f2(x, y):
+        if isinstance(x, (float, int)) and (y, (float, int)):
+            return x * y
+        return []
+    assert f2(a, b) == answer
