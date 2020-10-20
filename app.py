@@ -1,31 +1,33 @@
 from aiohttp import web
-from application.modules.user.User import User
-from application.modules.user.Manager import Manager
+import socketio
+
 from settings import SETTINGS
 from application.modules.db.DB import DB
 from application.modules.mediator.Mediator import Mediator
-# user
-# chat
+from application.modules.user.UserManager import UserManager
+from application.modules.chat.ChatManager import ChatManager
+from application.modules.lobby.LobbyManager import LobbyManager
 # audio ?
 # pirates
+from application.modules.game.Logic import Logic
 from application.router.Router import Router
+from application.socket.Socket import Socket
 
 db = DB(SETTINGS['DB'])
-manager = Manager(db)
 mediator = Mediator(SETTINGS['MEDIATOR']['EVENTS'], SETTINGS['MEDIATOR']['TRIGGERS'])
 
-#mediator.set('GET_USER_BY_ID', db.getUserById)
-#mediator.set('GET_USER_BY_TOKEN', db.getUserByToken)
-#mediator.get('GET_USER_BY_ID', '1')
-
-user = User("1", "vasya", "12345555", "12345", "12345")
-
-manager.registration("andrew","123","123")
-
-
+sio = socketio.AsyncServer(cors_allowed_origins="*")
 app = web.Application()
+sio.attach(app)
 Router(app, web, mediator)
+Logic(mediator)
 
+UserManager(db, mediator, sio, SETTINGS['MESSAGES'])
+ChatManager(db, mediator, sio, SETTINGS['MESSAGES'], SETTINGS['CHAT'])
+LobbyManager(
+    mediator=mediator,
+    sio=sio,
+    MESSAGES=SETTINGS['MESSAGES']
+)
 
-
-web.run_app(app)
+web.run_app(app, port=9000)
